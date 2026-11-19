@@ -12,8 +12,10 @@ public class BatchService {
   private final TaskService tasks;
   private final TaskDispatcher dispatcher;
   private final TransactionTemplate tx;
-  public BatchService(BusinessRepository repo,TaskService tasks,TaskDispatcher dispatcher,TransactionTemplate tx) {
-    this.repo=repo;this.tasks=tasks;this.dispatcher=dispatcher;this.tx=tx;
+  private final OutboxService outbox;
+  public BatchService(BusinessRepository repo,TaskService tasks,TaskDispatcher dispatcher,TransactionTemplate tx,
+      OutboxService outbox) {
+    this.repo=repo;this.tasks=tasks;this.dispatcher=dispatcher;this.tx=tx;this.outbox=outbox;
   }
   public Map<String,Object> submit(Identity who,String project,List<String> documentIds,String requestKey) {
     repo.project(who,project);
@@ -47,6 +49,17 @@ public class BatchService {
       dispatcher.start(task);
     return view(who,batch);
   }
+  public Map<String,Object> retryFile(Identity who,String batchId,String documentId,int expectedGeneration) {
+    var batch=repo.required("SELECT project_id FROM mb_ingest_batches WHERE id=?",batchId);
+    repo.project(who,text(batch,"project_id"));
+    var item=repo.required("SELECT task_id FROM mb_ingest_batch_items WHERE batch_id=? AND document_id=?",
+        batchId,documentId);
+    // Membership is immutable. The task row lock in retry serializes concurrent clicks and
+    // accepts a replay only for the same expected generation, without resetting other files.
+    outbox.retry(who,text(item,"task_id"),expectedGeneration);
+    return view(who,batchId);
+  }
+
   public Map<String,Object> view(Identity who,String id) {
     var batch=repo.required("SELECT * FROM mb_ingest_batches WHERE id=?",id);
     repo.project(who,text(batch,"project_id"));

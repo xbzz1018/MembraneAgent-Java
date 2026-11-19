@@ -77,6 +77,59 @@ class BatchOutboxTest {
     assertThat(progress.get("finished")).isEqualTo(2L);
     assertThat(count("mb_evidence")).isEqualTo(2);
   }
+  @Test void batchRetryHttpOnlyRestartsTheFailedFileAndRejectsStaleExecution() throws Exception {
+    String done=doc("DONE"), failed=doc("RETRY"), doneTask="ingest-"+done, failedTask="ingest-"+failed;
+    String batch=text(batches.submit(who,"demo-project",List.of(done,failed),"partial-batch-retry"),"id");
+    finish(doneTask);
+    var old=claim(failedTask);
+    outbox.failed(old,true,1,0,"synthetic_timeout");
+    assertThat(batches.view(who,batch).get("status")).isEqualTo("finished_with_errors");
+    var doneSnapshot=repo.required("SELECT * FROM mb_tasks WHERE id=?",doneTask);
+    var evidenceSnapshot=repo.sql().queryForList("SELECT * FROM mb_evidence WHERE document_id=?",done);
+    var auth=jwt().jwt(j->j.subject("designer").claim("tenant_id","demo-company").claim("role","DESIGNER"));
+    String path="/api/v1/ingest-batches/"+batch+"/items/"+failed+"/retry";
+    for(int replay=0;replay<2;replay++)
+      mvc.perform(post(path).with(auth).contentType("application/json").content("{\"expected_generation\":0}"))
+          .andExpect(status().isAccepted()).andExpect(jsonPath("$.id").value(batch))
+          .andExpect(jsonPath("$.counts.completed").value(1)).andExpect(jsonPath("$.counts.queued").value(1));
+    assertThat(tasks.get(who,failedTask).get("generation")).isEqualTo(1);
+    assertThat(outbox.claim(failedTask,0,60000,3)).isNull();
+    var current=outbox.claim(failedTask,1,60000,3);
+    assertThatThrownBy(()->processor.processClaimed(failedTask,old.token()))
+        .isInstanceOf(ResponseStatusException.class);
+    processor.processClaimed(failedTask,current.token());
+    mvc.perform(get("/api/v1/ingest-batches/"+batch).with(auth))
+        .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("completed"))
+        .andExpect(jsonPath("$.counts.completed").value(2));
+    mvc.perform(post("/api/v1/ingest-batches/"+batch+"/items/"+done+"/retry").with(auth)
+        .contentType("application/json").content("{\"expected_generation\":0}"))
+        .andExpect(status().isConflict());
+    assertThat(repo.required("SELECT * FROM mb_tasks WHERE id=?",doneTask)).isEqualTo(doneSnapshot);
+    assertThat(repo.sql().queryForList("SELECT * FROM mb_evidence WHERE document_id=?",done)).isEqualTo(evidenceSnapshot);
+    assertThat(count("mb_tasks")).isEqualTo(2);
+    assertThat(count("mb_task_outbox")).isEqualTo(2);
+    assertThat(count("mb_evidence")).isEqualTo(2);
+  }
+
+  @Test void batchRetryRequiresMembershipProjectPermissionAndAnExpectedGeneration() throws Exception {
+    String own=doc("OWN"), other=doc("OTHER");
+    String batch=text(batches.submit(who,"demo-project",List.of(own),"membership-batch"),"id");
+    String otherTask=task(other);
+    outbox.failed(claim(otherTask),false,3,0,"synthetic_failure");
+    var auth=jwt().jwt(j->j.subject("designer").claim("tenant_id","demo-company").claim("role","DESIGNER"));
+    String prefix="/api/v1/ingest-batches/"+batch+"/items/";
+    mvc.perform(post(prefix+other+"/retry").with(auth).contentType("application/json")
+        .content("{\"expected_generation\":0}")).andExpect(status().isNotFound());
+    var foreign=jwt().jwt(j->j.subject("outside").claim("tenant_id","outside-company").claim("role","ADMIN"));
+    mvc.perform(post(prefix+own+"/retry").with(foreign).contentType("application/json")
+        .content("{\"expected_generation\":0}")).andExpect(status().is4xxClientError());
+    mvc.perform(post(prefix+own+"/retry").with(auth).contentType("application/json").content("{}"))
+        .andExpect(status().is4xxClientError());
+    assertThat(state(otherTask)).isEqualTo("failed");
+    assertThat(tasks.get(who,otherTask).get("generation")).isEqualTo(0);
+    assertThat(state("ingest-"+own)).isEqualTo("queued");
+  }
+
   @Test void concurrentSubmissionsCreateOneBatchAndOneTaskPerFile() throws Exception {
     String a=doc("R1"), b=doc("R2");
     var pool=Executors.newFixedThreadPool(4);

@@ -78,11 +78,14 @@ pwsh -NoProfile -File scripts/smoke.ps1
 | POST /api/v1/documents/upload | multipart：file、project_id、version、doc_type、material_model |
 | POST /api/v1/ingest-batches | JSON：project_id、document_ids、request_id；202 返回批次与文件任务 |
 | GET /api/v1/ingest-batches/{id} | total、finished、counts、items；包含处理错误和投递状态 |
+| POST /api/v1/ingest-batches/{id}/items/{documentId}/retry | JSON：expected_generation；仅重试该批次中的指定失败文件，返回原批次进度 |
 | GET /api/v1/tasks/{id} | 状态、generation、attempt、last_error、delivery；隐藏认领令牌 |
 | POST /api/v1/tasks/{id}/retry | JSON：expected_generation；只重试失败的 Rabbit 任务 |
 | POST /api/v1/tasks/{id}/cancel | 取消未终止任务并使认领失效 |
 | GET /api/v1/documents/page | project_id、material_model、version、doc_type、page、size |
 | GET /api/v1/specifications | project_id、material_model、version；返回原文依据与 cache 状态 |
+
+批次内重试先校验项目权限及文件归属，再复用任务重试事务。请求中的 `expected_generation` 来自批次进度的对应文件；相同值重复提交复用同一轮重试。已成功或已取消的文件不能重新启动；旧轮次的消息和执行不能写入新结果。多个批次引用同一份文档时，共享其文件任务状态。
 
 分页最大 100 条，固定 created_at DESC, id DESC 排序；关联任务与切片数量通过两次批量查询获取。旧 `/documents` 仍返回数组，默认仅第一页 20 条；旧客户端若依赖全量列表，须按 `X-Total-Count`、`X-Page`、`X-Page-Size` 翻页，或改用 `/documents/page`。
 
@@ -124,7 +127,9 @@ Get-Content -Raw scripts/explain-catalog.sql | docker compose -p membrane-java-c
 
 未设置 JAVA_INFRA_TESTS 时基础设施测试明确跳过。开启后验证事务回滚、并发提交、重复投递、路由返回、有限重试、租约过期、取消、HTTP 慢响应、Redis TTL/事务失效及原业务流程。新集成测试使用独立 rabbit_check schema 和 membrane.java.integration 队列。
 
-SQL 脚本仅在临时表生成 5 万条合成数据对比索引，最后回滚。2026-11-18 最新 Java 构建完整验证 71 项通过，零失败、零跳过。项目投递窗口限制提前发给 RabbitMQ 的数量；新增两项入库上限限制数据库内未结束的文件任务。三个开关默认均为 0。最新短时高峰对照见[高峰接单验收](ACCEPTANCE.md#高峰接单验收)及[验收记录](validation.json)的 `peak_admission`；投递窗口、强杀恢复等早期演练按各自构建保留。
+2026-11-19 批次内单文件重试版本完整验证 74 项通过，零失败、零跳过；新增 HTTP 重试闭环、批次归属/权限和 PostgreSQL 并发重试验证，见[验收记录](validation.json)的 `batch_item_retry`。[功能与验证对应关系](FEATURE-VERIFICATION.md)列出接口、源码和验证入口。
+
+SQL 脚本仅在临时表生成 5 万条合成数据对比索引，最后回滚。2026-11-18 的高峰保护构建验证了 71 项测试。项目投递窗口限制提前发给 RabbitMQ 的数量；两项入库上限限制数据库内未结束的文件任务。三个开关默认均为 0。短时高峰对照见[高峰接单验收](ACCEPTANCE.md#高峰接单验收)及[验收记录](validation.json)的 `peak_admission`；投递窗口、强杀恢复等早期演练按各自构建保留，本次未重跑性能对照。
 
 演练使用单机隔离中间件、本地目录存储和可控的 HTTP 模型替身；尚未验收真实 GPU、MinIO、旧 Vue 前端、生产负载、集群高可用和整机灾难恢复。
 

@@ -1,4 +1,30 @@
 {
+  "batch_item_retry": {
+    "date": "2026-11-19",
+    "scope": "Personal Java implementation; synthetic MockMvc and real PostgreSQL, RabbitMQ, Redis integration checks. Historical performance drills remain on their original builds.",
+    "command": "JAVA_INFRA_TESTS=true mvn -q clean verify",
+    "tests": {
+      "tests": 74,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "status": "passed",
+    "jar_sha256": "cfb4686b8e9b206a8ab2f04f4e99d53d7f56c3b8b1e4897ce12438669812b45b",
+    "source_sha256": {
+      "pom.xml": "24ccfb6ae1fa17d7e7b64097a414fa51910f97da4fc10e8e06a9e78ec0ef433b",
+      "src/main/java/com/greenmembrane/platform/BatchService.java": "9a128c73578dd2c44b7012c63050ac7f9b0745289e2a410ae9086bef1d7e430a",
+      "src/main/java/com/greenmembrane/platform/BatchController.java": "fa41f056ff8d30005ba6ea2e1897b8a57f64e28ad9dcb882618552a8badb8397",
+      "src/test/java/com/greenmembrane/platform/BatchOutboxTest.java": "da53003b7eb9aca2a4f64ba7487e4e7e02245b95ea3be86eb19049bba5fef1df",
+      "src/test/java/com/greenmembrane/platform/RabbitInfrastructureTest.java": "adcd2ef6e9a1ad011e81f977340714d0dae05c8e5db8b9d68c46c8216b4b5859"
+    },
+    "new_scenarios": [
+      "batchRetryHttpOnlyRestartsTheFailedFileAndRejectsStaleExecution",
+      "batchRetryRequiresMembershipProjectPermissionAndAnExpectedGeneration",
+      "concurrentPartialBatchRetriesPublishOnceAndPreserveTheSuccessfulFile"
+    ],
+    "limits": "Failure injected at service boundary; no real GPU, browser UI, multi-instance soak, or new load-test measurements."
+  },
   "peak_admission": {
     "date": "2026-11-18",
     "scope": "Latest personal Java implementation. Prior build reports retained separately.",

@@ -94,6 +94,45 @@ class RabbitInfrastructureTest {
     assertThat(((Number)page.get("total")).longValue()).isEqualTo(1);
     assertThat(((List<?>)page.get("items"))).hasSize(1);
   }
+  @Test void concurrentPartialBatchRetriesPublishOnceAndPreserveTheSuccessfulFile() throws Exception {
+    String done=upload("DONE"), failed=upload("RETRY");
+    String batch=text(batches.submit(who,project,List.of(done,failed),"pg-partial-batch"),"id");
+    String doneTask="ingest-"+done, failedTask="ingest-"+failed;
+    var successful=outbox.claim(doneTask,0,60000,3);
+    processor.processClaimed(doneTask,successful.token());
+    for(int attempt=0;attempt<3;attempt++) {
+      var claim=outbox.claim(failedTask,0,60000,3);
+      outbox.failed(claim,true,3,0,"synthetic_timeout");
+    }
+    assertThat(batches.view(who,batch).get("status")).isEqualTo("finished_with_errors");
+    var finishedSnapshot=repo.required("SELECT * FROM mb_tasks WHERE id=?",doneTask);
+    var evidenceSnapshot=repo.sql().queryForList("SELECT * FROM mb_evidence WHERE document_id=?",done);
+    var pool=Executors.newFixedThreadPool(4);
+    var gate=new CountDownLatch(1);
+    try {
+      List<Future<Map<String,Object>>> clicks=new ArrayList<>();
+      for(int i=0;i<4;i++) clicks.add(pool.submit(()->{
+        gate.await();return batches.retryFile(who,batch,failed,0);
+      }));
+      gate.countDown();
+      for(var click:clicks) assertThat(click.get(10,TimeUnit.SECONDS).get("id")).isEqualTo(batch);
+    } finally { gate.countDown();pool.shutdownNow(); }
+    assertThat(tasks.get(who,failedTask).get("generation")).isEqualTo(1);
+    assertThat(tasks.get(who,failedTask).get("attempt")).isEqualTo(0);
+    assertThat(outbox.claim(failedTask,0,60000,3)).isNull();
+    listeners.start();
+    publisher.tick();
+    await().atMost(Duration.ofSeconds(15)).untilAsserted(()->
+        assertThat(batches.view(who,batch).get("status")).isEqualTo("completed"));
+    listeners.stop();
+    assertThat(tasks.get(who,failedTask).get("attempt")).isEqualTo(1);
+    assertThat(repo.required("SELECT send_attempts FROM mb_task_outbox WHERE task_id=?",failedTask)
+        .get("send_attempts")).isEqualTo(1);
+    assertThat(repo.required("SELECT * FROM mb_tasks WHERE id=?",doneTask)).isEqualTo(finishedSnapshot);
+    assertThat(repo.sql().queryForList("SELECT * FROM mb_evidence WHERE document_id=?",done)).isEqualTo(evidenceSnapshot);
+    assertThat(repo.sql().queryForObject("SELECT COUNT(*) FROM mb_evidence WHERE project_id=?",Long.class,project)).isEqualTo(2);
+  }
+
   @Test void unroutableMessageRemainsPendingEvenWhenBrokerAcknowledgesPublish() {
     String id=task(upload("R1"));
     String exchange="membrane.java.unroutable."+BusinessSupport.id();

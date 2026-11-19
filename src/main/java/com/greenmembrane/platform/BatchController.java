@@ -30,6 +30,12 @@ public class BatchController {
   public Map<String,Object> batch(@AuthenticationPrincipal Jwt jwt,@PathVariable String id) {
     return batches.view(Identity.from(jwt),id);
   }
+  @PostMapping("/ingest-batches/{id}/items/{documentId}/retry")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public Map<String,Object> retryFile(@AuthenticationPrincipal Jwt jwt,@PathVariable String id,
+      @PathVariable String documentId,@Valid @RequestBody RetryRequest request) {
+    return batches.retryFile(Identity.from(jwt),id,documentId,request.expectedGeneration());
+  }
   @PostMapping("/tasks/{id}/retry")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public Map<String,Object> retry(@AuthenticationPrincipal Jwt jwt,@PathVariable String id,@Valid @RequestBody RetryRequest request) {

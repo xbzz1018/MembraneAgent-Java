@@ -17,6 +17,19 @@ if ($LASTEXITCODE -ne 0) { throw '打包应用验收失败，请检查对应 rec
 
 `mvn clean` 会清理上次的 `target`。先保留需要对照的证据。故障脚本使用随机端口、独立 schema 和队列，自动启动和停止自己的 Java 进程；结果在 `target/recovery-*/result.json`，同目录有重启前后两份日志。单独演示时可以按 README 启动 `local-rabbit`，执行 `pwsh -NoProfile -File scripts/smoke.ps1`。核对结果后用 `docker compose -p membrane-java-check -f compose.test.yml down` 关闭隔离容器，不用于正式数据库。
 
+## 批次内单文件重试
+
+提交两份合成资料，令其中一份完成、另一份因注入的临时故障达到重试上限。进度应显示 `finished_with_errors`，成功数 1、失败数 1。读取失败文件的 `document_id` 与 `generation`，调用：
+
+```text
+POST /api/v1/ingest-batches/{batchId}/items/{documentId}/retry
+{"expected_generation": 0}
+```
+
+响应为 202 和同一个批次的进度；成功文件不重新解析。重复点击携带相同的执行代数，服务复用同一轮重试。成功文件收到新的重试命令返回 409；其他批次的文件及无项目权限的请求不能触发重试。若重试后再次失败，需要重新读取 generation 后决定下一次重试，不能不断重放旧命令。
+
+2026-11-19 完整回归 74 项通过、零跳过。新增 `BatchOutboxTest` 两项 MockMvc 场景验证上述接口和旧执行隔离；`RabbitInfrastructureTest.concurrentPartialBatchRetriesPublishOnceAndPreserveTheSuccessfulFile` 在实际 PostgreSQL 上并发发起四次重试，再通过实际 RabbitMQ 消费，核对只有一轮新执行且成功文件的任务行、片段逐项不变。测试中的故障由服务边界注入，不代表真实模型故障或浏览器验收。
+
 ## 看业务结果，不只看服务是否启动
 
 | 场景 | 操作 | 通过标准 |
