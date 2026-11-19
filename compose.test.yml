@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    ports: ['127.0.0.1:55438:5432']
+    volumes:
+      - ./scripts/init-test-vector.sql:/docker-entrypoint-initdb.d/01-vector.sql:ro
+    environment:
+      POSTGRES_USER: java_check
+      POSTGRES_PASSWORD: synthetic-java-check-only
+      POSTGRES_DB: membrane_java
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U java_check -d membrane_java']
+      interval: 5s
+      timeout: 3s
+      retries: 15
+  redis:
+    image: redis:8-alpine
+    ports: ['127.0.0.1:56388:6379']
+
+  rabbit:
+    image: rabbitmq:4.2-management
+    ports: ['127.0.0.1:56738:5672', '127.0.0.1:15638:15672']
+    environment:
+      RABBITMQ_DEFAULT_USER: java_check
+      RABBITMQ_DEFAULT_PASS: synthetic-java-check-only
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 20

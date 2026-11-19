@@ -1,0 +1,41 @@
+# Explicit isolated demo. Never points at the Python database.
+server:
+  address: 127.0.0.1
+spring:
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:55438/membrane_java?currentSchema=java_demo,public
+    username: java_check
+    password: synthetic-java-check-only
+  flyway:
+    locations: classpath:db/migration
+    schemas: java_demo
+    default-schema: java_demo
+  rabbitmq:
+    host: 127.0.0.1
+    port: 56738
+    username: java_check
+    password: synthetic-java-check-only
+  data:
+    redis:
+      url: redis://127.0.0.1:56388/0
+app:
+  demo: true
+  execution: rabbit
+  model-mode: rules
+  vector-enabled: false
+  object-store: local
+  storage: ./runtime/rabbit-demo-objects
+  redis-enabled: true
+  rate-capacity: 300
+  spec-cache:
+    enabled: true
+    ttl-seconds: 120
+  jobs:
+    queue: membrane.java.demo.v1
+    exchange: membrane.java.demo.v1
+management:
+  health:
+    rabbit:
+      enabled: true
+    redis:
+      enabled: true

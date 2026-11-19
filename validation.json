@@ -1,0 +1,678 @@
+{
+  "peak_admission": {
+    "date": "2026-11-18",
+    "scope": "Latest personal Java implementation. Prior build reports retained separately.",
+    "jar_sha256": "4b943879e6ac9bd988f529bc9a270a02c3f425767a73d2282ab68ec43b7e159d",
+    "command": "JAVA_INFRA_TESTS=true mvn -q verify",
+    "tests": {
+      "tests": 71,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "status": "passed",
+    "raw": [
+      "target/peak-ee7e39ff090e/result.json",
+      "target/peak-62e2107efd4e/result.json",
+      "target/peak-f4526860d37b/result.json",
+      "target/peak-64d8947c4c0b/result.json"
+    ],
+    "stall_baseline": {
+      "mode": "baseline",
+      "files_per_project": [
+        10,
+        5,
+        5
+      ],
+      "writer_threads": 8,
+      "reader_threads": 4,
+      "consumers": 2,
+      "prefetch": 2,
+      "dispatch_window": 2,
+      "project_limit": 0,
+      "global_limit": 0,
+      "http_outcomes": {
+        "202": 20
+      },
+      "backlog_before_release": 20,
+      "drain_after_release_s": 2.625,
+      "accepted_submit_p95_ms": 125.0,
+      "rejected_submit_p95_ms": null,
+      "read_samples": {
+        "spec": 69,
+        "progress": 70
+      },
+      "read_p95_ms": {
+        "spec": 32.0,
+        "progress": 31.0
+      },
+      "same_key_replayed_at_capacity": true,
+      "rejected_later_accepted": 0,
+      "reconciled_files_excluding_seed": 20
+    },
+    "stall_protected": {
+      "mode": "protected",
+      "files_per_project": [
+        10,
+        5,
+        5
+      ],
+      "writer_threads": 8,
+      "reader_threads": 4,
+      "consumers": 2,
+      "prefetch": 2,
+      "dispatch_window": 2,
+      "project_limit": 6,
+      "global_limit": 9,
+      "http_outcomes": {
+        "202": 9,
+        "429": 4,
+        "503": 7
+      },
+      "backlog_before_release": 9,
+      "drain_after_release_s": 1.813,
+      "accepted_submit_p95_ms": 94.0,
+      "rejected_submit_p95_ms": 125.0,
+      "read_samples": {
+        "spec": 52,
+        "progress": 52
+      },
+      "read_p95_ms": {
+        "spec": 31.0,
+        "progress": 32.0
+      },
+      "same_key_replayed_at_capacity": true,
+      "rejected_later_accepted": 11,
+      "reconciled_files_excluding_seed": 20
+    },
+    "wave_baseline": {
+      "mode": "wave-baseline",
+      "offered_schedule": [
+        [
+          "normal",
+          4,
+          2
+        ],
+        [
+          "peak",
+          36,
+          12
+        ],
+        [
+          "cooldown",
+          4,
+          2
+        ]
+      ],
+      "embedding_delay_ms": 400,
+      "dispatch_window": 2,
+      "active_consumers": 2,
+      "outcomes_by_phase": {
+        "normal": {
+          "202": 4
+        },
+        "peak": {
+          "202": 36
+        },
+        "cooldown": {
+          "202": 4
+        }
+      },
+      "submitted": 44,
+      "accepted_and_reconciled": 44,
+      "rejected_without_records": 0,
+      "max_observed_outstanding": 28,
+      "backlog_samples": 27,
+      "final_outstanding": 0,
+      "max_model_calls_in_parallel": 2,
+      "read_requests": 196,
+      "spec_p95_ms": 31.0,
+      "drain_after_last_submission_response_s": 5.422
+    },
+    "wave_protected": {
+      "mode": "wave-protected",
+      "offered_schedule": [
+        [
+          "normal",
+          4,
+          2
+        ],
+        [
+          "peak",
+          36,
+          12
+        ],
+        [
+          "cooldown",
+          4,
+          2
+        ]
+      ],
+      "embedding_delay_ms": 400,
+      "dispatch_window": 2,
+      "active_consumers": 2,
+      "outcomes_by_phase": {
+        "normal": {
+          "202": 4
+        },
+        "peak": {
+          "202": 18,
+          "503": 18
+        },
+        "cooldown": {
+          "202": 4
+        }
+      },
+      "submitted": 44,
+      "accepted_and_reconciled": 26,
+      "rejected_without_records": 18,
+      "max_observed_outstanding": 9,
+      "backlog_samples": 18,
+      "final_outstanding": 0,
+      "max_model_calls_in_parallel": 2,
+      "read_requests": 130,
+      "spec_p95_ms": 32.0,
+      "drain_after_last_submission_response_s": 1.375
+    },
+    "limits": "Single host, warmed spec cache, local synthetic one-chunk documents, raised request-rate guard. Short bursts; not a production traffic limit. Capacity applies to uncompleted Rabbit ingest work, not reviews or bytes. 2/6/9 are experiment settings."
+  },
+  "dispatch_window_validation": {
+    "date": "2026-11-18",
+    "scope": "Newest Java build; earlier top-level reports and SHA are historical.",
+    "jar_sha256": "badfccc54553472ab9aff6bf3476a7351caf1ee7e469792feae87a3a48de23bd",
+    "command": "JAVA_INFRA_TESTS=true mvn -q verify",
+    "tests": {
+      "tests": 69,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "raw": [
+      "target/contention-d439ed2e6494/result.json",
+      "target/contention-3d236b70a805/result.json"
+    ],
+    "status": "passed",
+    "median_ms": {
+      "single_batch_default": {
+        "submit_http_ms": 31,
+        "task_created_to_claim_ms": 5008,
+        "submit_to_observed_queryable_ms": 5156,
+        "bulk_first_submit_to_last_observed_terminal_ms": 5547
+      },
+      "client_window_2": {
+        "submit_http_ms": 47,
+        "task_created_to_claim_ms": 1614,
+        "submit_to_observed_queryable_ms": 1750,
+        "bulk_first_submit_to_last_observed_terminal_ms": 6312
+      },
+      "single_batch_server_window_2": {
+        "submit_http_ms": 31,
+        "task_created_to_claim_ms": 1637,
+        "submit_to_observed_queryable_ms": 1750,
+        "bulk_first_submit_to_last_observed_terminal_ms": 6390
+      }
+    },
+    "runs_per_mode": 3,
+    "consumer_count": 2,
+    "prefetch": 2,
+    "bulk_files": 6,
+    "pages_per_file": 8,
+    "synthetic_delay_per_embedding_ms": 200,
+    "verified_pdf_pages": 432,
+    "eof_recovery_per_run": [
+      {
+        "task_id": "ingest-cef23a31-ad80-417c-950c-c31bc74a7d07",
+        "model_calls": 2,
+        "attempts": 2,
+        "evidence_rows": 1,
+        "vector_rows": 1,
+        "outbox": "done"
+      },
+      {
+        "task_id": "ingest-2d8bbc56-b0b4-4129-b781-dbad89483301",
+        "model_calls": 2,
+        "attempts": 2,
+        "evidence_rows": 1,
+        "vector_rows": 1,
+        "outbox": "done"
+      }
+    ],
+    "historical_diagnostics": {
+      "old_jar_retry": "target/contention-68b91241bf9d/result.json",
+      "new_jar_eof": "target/contention-927f64fe4c7c/result.json",
+      "exception_log": "target/contention-927f64fe4c7c/app-1.log",
+      "pre_keepalive_window_run": "target/contention-3e83dc9e2c59/result.json",
+      "finding": "Observed EOFException on one non-injected HTTP 502; the earlier untraced retry cannot be retroactively attributed. Normal HTTP/1.1 workload passed; a separate one-time forced EOF recovered on both configurations."
+    },
+    "default_window": 0,
+    "limits": "Local synthetic workload; limited dispatch is not remote resource isolation or a strict scheduling latency guarantee."
+  },
+  "date": "2026-11-18",
+  "scope": "java-backend only; subsequent personal implementation, not historical internship evidence",
+  "status": "passed_with_stated_limits",
+  "command": "JAVA_INFRA_TESTS=true mvn -q verify",
+  "stack": {
+    "java": "17",
+    "spring_boot": "3.5.16",
+    "mybatis_plus": "3.5.16",
+    "execution": "rabbitmq",
+    "business_database": "PostgreSQL",
+    "cache": "Redis"
+  },
+  "tests": {
+    "tests": 67,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "name": "com.greenmembrane.platform.AgentToolsTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.greenmembrane.platform.BatchOutboxTest",
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.greenmembrane.platform.BusinessFlowTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.greenmembrane.platform.InfrastructureTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.greenmembrane.platform.JavaBackendHttpTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.greenmembrane.platform.ModelBoundaryTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.greenmembrane.platform.ObjectStorageTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.greenmembrane.platform.ParserTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.greenmembrane.platform.RabbitInfrastructureTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.greenmembrane.platform.RabbitWorkerTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "validated": [
+    "Batch task/outbox atomicity and rollback on invalid sources; H2 and real PostgreSQL",
+    "Concurrent idempotent batch submissions, stable task counts and progress",
+    "Real RabbitMQ persistent publication, confirms and mandatory unroutable returns",
+    "Explicit nack/requeue on database failure, confirmed real broker redelivery",
+    "Duplicate delivery, acknowledgement order, finite processing retry and generation fencing",
+    "Lease expiry/replacement and cancellation reject stale result writes",
+    "Malformed and fractional-generation envelopes routed to dead-letter queue",
+    "MyBatis-Plus filtered pagination with batched related task and chunk-count queries",
+    "Real Redis specification cache hits, TTL, project scope, commit eviction and rollback retention",
+    "Configured HTTP timeout tested against slow local HTTP service",
+    "Preserved permissions, indexing, retrieval, review, approval and export regression",
+    "Real PostgreSQL/pgvector synthetic-vector query and transaction compatibility",
+    "Model HTTP doubles, parser tests and S3 HTTP double",
+    "Deadline and lease checks fence final writes and roll back partial ingest before publishing completion",
+    "PostgreSQL outbox publisher skips a locked row to claim another eligible delivery",
+    "Legacy document list bounded with pagination headers and invalid size rejected",
+    "Delayed headers, stalled body after headers, and oversized chunked responses are bounded",
+    "Packaged process killed during first downstream call, then restarted: one evidence row and one vector at attempt 2",
+    "In-flight delivery observed before cancellation; late response drained with zero evidence for cancelled file",
+    "One synthetic mixed-load run with warm specifications, concurrent batch HTTP submissions and controlled slow embeddings; per-file result and queue-state reconciliation",
+    "Packaged broker/worker retry policy: non-rotating upstream 401 stops at attempt 1; transient 429 then success completes at attempt 2"
+  ],
+  "packaged_jar_smoke": {
+    "profile": "local-rabbit, isolated schema, synthetic HTTP embedding",
+    "status": "passed",
+    "execution": "rabbit",
+    "cache": "hit",
+    "batch_status": "completed",
+    "batch_id": "333caa60-a8bd-4060-97ac-a49617b4b179",
+    "review_id": "332a3b08-a7eb-4dbf-b0b4-0ada2d7e722b",
+    "final_status": "approved",
+    "word_bytes": 3006,
+    "word_xml_checked_for_source_values": [
+      "3500",
+      "4000"
+    ],
+    "owned_java_processes_stopped": true
+  },
+  "sql_explain": {
+    "script": "scripts/explain-catalog.sql",
+    "rows": 50000,
+    "data": "Synthetic temporary table, transaction rolled back; single local sample, no production claim",
+    "pagination": {
+      "before_plan": "Seq Scan + top-N sort",
+      "after_plan": "Index Scan Backward",
+      "before_ms": 8.22,
+      "after_ms": 0.039
+    },
+    "specifications": {
+      "before_plan": "Seq Scan",
+      "after_plan": "Bitmap Index Scan + Bitmap Heap Scan",
+      "before_ms": 3.484,
+      "after_ms": 0.165
+    }
+  },
+  "limits": [
+    "At-least-once delivery plus DB idempotency; no distributed exactly-once claim",
+    "Post-commit eviction plus TTL is eventual consistency; concurrent cache refill may briefly serve stale values",
+    "Version-specific document IDs; no global latest-version pointer",
+    "Legacy unfinished Java tasks are not migrated automatically",
+    "Basic parser runs in Java; no newly integrated remote Python parser/OCR service",
+    "No production throughput, real GPU/LoRA, real MinIO, RabbitMQ cluster HA, multi-host clock-skew, full-host loss or backup/restore validation",
+    "Original Vue frontend integration and Java MCP parity not part of this change",
+    "Original company Recall/MRR metrics do not apply to this implementation"
+  ],
+  "synthetic_test_data_only": true,
+  "python_source_modified": false,
+  "git_commit_or_push_performed": false,
+  "jar_sha256": "49ca1f8f250578b38a2ac7512a7ce92c658f96c96366774cfc47bbb5aa57efa4",
+  "project_contention": {
+    "date": "2026-11-18",
+    "command": "python scripts/verify-process-recovery.py --project-contention",
+    "maven_rerun": {
+      "command": "JAVA_INFRA_TESTS=true mvn -q test",
+      "tests": 67,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    "scope": "Local synthetic acceptance, same packaged JAR, mock embedding latency; no server scheduling change.",
+    "status": "final_run_passed_prior_retry_unresolved",
+    "jar_sha256": "49ca1f8f250578b38a2ac7512a7ce92c658f96c96366774cfc47bbb5aa57efa4",
+    "workload": {
+      "rounds_per_mode": 3,
+      "bulk_files_per_contended_round": 6,
+      "pages_per_pdf": 8,
+      "extra_ms_per_pdf_embedding": 200,
+      "consumers": 2,
+      "prefetch": 2,
+      "claim_max_run_ms": 120000,
+      "poll_interval_ms": 100,
+      "urgent_files_per_round": 1
+    },
+    "final_raw": "target/contention-7a7b071264ae/result.json",
+    "median_ms": {
+      "idle": {
+        "submit_http_ms": 32,
+        "task_created_to_claim_ms": 818,
+        "submit_to_observed_queryable_ms": 891
+      },
+      "busy": {
+        "submit_http_ms": 32,
+        "task_created_to_claim_ms": 5048,
+        "submit_to_observed_queryable_ms": 5203,
+        "bulk_first_submit_to_last_observed_terminal_ms": 6000
+      },
+      "window1": {
+        "submit_http_ms": 31,
+        "task_created_to_claim_ms": 986,
+        "submit_to_observed_queryable_ms": 1093,
+        "bulk_first_submit_to_last_observed_terminal_ms": 12437
+      }
+    },
+    "lost_response": {
+      "upstream_http": 202,
+      "client": "RemoteDisconnected",
+      "replay_http": 202,
+      "conflict_http": 409,
+      "same_batch_id": "d051acf9-94d5-4abb-97bf-f734b8041baf",
+      "database_batches": 1,
+      "file_tasks": 2,
+      "attempts_per_file": 1,
+      "evidence_rows": 2,
+      "vector_rows": 2
+    },
+    "final_pdf_pages_verified": 288.0,
+    "final_trials": 9,
+    "retry_transitions": [],
+    "owned_java_processes_stopped": true,
+    "run_history": [
+      {
+        "raw": "target/contention-613f707d3096/result.json",
+        "status": "passed",
+        "completed_trials": 6
+      },
+      {
+        "raw": "target/contention-87afad938728/result.json",
+        "status": "failed",
+        "completed_trials": 8
+      },
+      {
+        "raw": "target/contention-e6db7e6ef042/result.json",
+        "status": "passed",
+        "completed_trials": 9
+      },
+      {
+        "raw": "target/contention-7a7b071264ae/result.json",
+        "status": "passed",
+        "completed_trials": 9
+      }
+    ],
+    "investigation": {
+      "failed_raw": "target/contention-87afad938728/result.json",
+      "document_version": "heavy-3-busy-0",
+      "db_task_id": "ingest-b4c14f1e-8466-4855-a640-3c0b2f89ce97",
+      "task_status": "completed",
+      "outbox_status": "done",
+      "generation": 0,
+      "execution_attempts": 2,
+      "send_attempts": 2,
+      "evidence_rows": 8,
+      "vector_rows": 8,
+      "first_failure_reason": null,
+      "state": "Original first-error reason cleared on claim; a clean replay does not explain this event. New test-only trigger stores committed retry/failure reasons."
+    }
+  },
+  "previous_validation": {
+    "date": "2026-11-17",
+    "tests": {
+      "tests": 55,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "jar_sha256": "0d89eb7ac6c4b67f56862a141a7542eecebdbdc95fca228b93def1ec2daacad9",
+    "packaged_jar_smoke": {
+      "status": "passed",
+      "profile": "local-rabbit",
+      "port": 18089,
+      "database": "PostgreSQL isolated java_demo schema",
+      "execution": "rabbit",
+      "model_mode": "rules",
+      "cache": "hit",
+      "batch_status": "completed",
+      "final_status": "approved",
+      "batch_id": "2321c879-dec9-4ff2-b3e4-a619b316080c",
+      "review_id": "1271aff7-1d53-4a7d-815c-b224785918b2",
+      "word_bytes": 3004,
+      "word_zip_xml_valid": true,
+      "source_values_present": true,
+      "server_stopped_after_smoke": true,
+      "note": "Normal-path packaged smoke preceded final database-failure nack patch; final patch verified by full suite including actual broker redelivery."
+    }
+  },
+  "acceptance_guide": "ACCEPTANCE.md",
+  "packaged_acceptance_command": "python scripts/verify-process-recovery.py",
+  "process_drills": {
+    "crash": {
+      "task_id": "ingest-c718574f-b40c-456d-b307-4bde3ba21862",
+      "old_pid": 27152,
+      "new_pid": 13360,
+      "attempt_before": 1,
+      "attempt_after": 2,
+      "evidence_rows": 1,
+      "vector_rows": 1,
+      "seconds_including_restart": 16.891,
+      "task_state_edited_for_recovery": false
+    },
+    "cancelled_late_response": {
+      "task_id": "ingest-37da3d72-7765-4246-b902-16896b54d42c",
+      "status": "cancelled",
+      "evidence_rows": 0,
+      "queue_drained": true
+    },
+    "jar_sha256": "49ca1f8f250578b38a2ac7512a7ce92c658f96c96366774cfc47bbb5aa57efa4",
+    "isolated_schema": "recovery_30a2fd4a83ce",
+    "observed_inflight_delivery_before_cancelling": true
+  },
+  "prior_62_test_run": {
+    "date": "2026-11-18",
+    "tests": {
+      "tests": 62,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "jar_sha256": "950f5142340f7bd17f8f48527b5cb408008f7fbf71ee6699144c84cf2b9104b2",
+    "process_drills": {
+      "crash": {
+        "task_id": "ingest-fa3fc3f0-40bd-4d41-909a-a9ceb7022820",
+        "old_pid": 58424,
+        "new_pid": 47540,
+        "attempt_before": 1,
+        "attempt_after": 2,
+        "evidence_rows": 1,
+        "vector_rows": 1,
+        "seconds_including_restart": 13.813,
+        "task_state_edited_for_recovery": false
+      },
+      "cancelled_late_response": {
+        "task_id": "ingest-2a362b45-0cfe-4797-ae47-a55d2636776b",
+        "status": "cancelled",
+        "evidence_rows": 0,
+        "queue_drained": true
+      },
+      "jar_sha256": "950f5142340f7bd17f8f48527b5cb408008f7fbf71ee6699144c84cf2b9104b2",
+      "isolated_schema": "recovery_789eacca8e0a",
+      "observed_inflight_delivery_before_cancelling": true
+    },
+    "packaged_jar_smoke": {
+      "profile": "local-rabbit with isolated schema and synthetic 3-dimensional HTTP embedding",
+      "status": "passed",
+      "execution": "rabbit",
+      "cache": "hit",
+      "batch_status": "completed",
+      "batch_id": "977c03eb-c109-496d-9733-ccecf28db563",
+      "review_id": "fe11a2ab-5f26-4d56-8607-d94b6affd6f9",
+      "final_status": "approved",
+      "word_bytes": 3006,
+      "word_xml_checked_for_source_values": [
+        "3500",
+        "4000"
+      ],
+      "owned_java_processes_stopped": true
+    }
+  },
+  "mixed_load_command": "python scripts/verify-process-recovery.py --mixed-load",
+  "mixed_load": {
+    "synthetic": true,
+    "schema": "mixed_e5843ed6ce9c",
+    "status": "passed",
+    "jar_sha256": "49ca1f8f250578b38a2ac7512a7ce92c658f96c96366774cfc47bbb5aa57efa4",
+    "workload": {
+      "consumer_concurrency": 2,
+      "prefetch": 2,
+      "files_per_batch": 2,
+      "import_batches_per_phase": 6,
+      "reader_requests_per_phase": 48,
+      "reader_interval_ms": 100,
+      "slow_embedding_ms": 500,
+      "file_type": "synthetic single-chunk text",
+      "reader_cache": "warm",
+      "http_rate_capacity": 3000,
+      "writer_account": "admin",
+      "reader_account": "employee"
+    },
+    "phases": [
+      {
+        "phase": "baseline",
+        "queries_ok": 48,
+        "queries_overlapping_slow_call": 0,
+        "query_p95_ms": 47.0,
+        "accepted_batches": 0,
+        "submit_p95_ms": null,
+        "sampled_peak_queued_files": 0,
+        "observed_drain_after_last_202_s": null,
+        "completed_and_reconciled_files": 0
+      },
+      {
+        "phase": "normal",
+        "queries_ok": 48,
+        "queries_overlapping_slow_call": 0,
+        "query_p95_ms": 47.0,
+        "accepted_batches": 6,
+        "submit_p95_ms": 125.0,
+        "sampled_peak_queued_files": 12,
+        "observed_drain_after_last_202_s": 0.485,
+        "completed_and_reconciled_files": 12
+      },
+      {
+        "phase": "slow",
+        "queries_ok": 48,
+        "queries_overlapping_slow_call": 30,
+        "query_p95_ms": 31.0,
+        "accepted_batches": 6,
+        "submit_p95_ms": 94.0,
+        "sampled_peak_queued_files": 12,
+        "observed_drain_after_last_202_s": 3.953,
+        "completed_and_reconciled_files": 12
+      }
+    ],
+    "upstream_errors": {
+      "fault-auth": {
+        "provider_calls": 1,
+        "task_status": "failed",
+        "last_error": "model_credentials_rejected",
+        "evidence_rows": 0
+      },
+      "fault-busy": {
+        "provider_calls": 2,
+        "task_status": "completed",
+        "last_error": "",
+        "evidence_rows": 1
+      }
+    },
+    "owned_java_processes_stopped": true
+  }
+}

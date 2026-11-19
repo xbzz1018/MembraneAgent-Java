@@ -1,0 +1,103 @@
+server:
+  shutdown: graceful
+  port: ${PORT:18081}
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+  application:
+    name: membrane-business-backend
+  datasource:
+    url: ${JDBC_URL:jdbc:h2:file:./runtime/membrane-rabbit;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE}
+    username: ${JDBC_USER:sa}
+    password: ${JDBC_PASSWORD:}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:12}
+      minimum-idle: 2
+      connection-timeout: 5000
+  flyway:
+    locations: classpath:db/migration
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 21MB
+  data:
+    redis:
+      url: ${REDIS_URL:redis://127.0.0.1:6379/0}
+      connect-timeout: 2s
+      timeout: 2s
+  rabbitmq:
+    host: ${RABBIT_HOST:127.0.0.1}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USER:guest}
+    password: ${RABBIT_PASSWORD:guest}
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    connection-timeout: 3s
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+management:
+  health:
+    rabbit:
+      enabled: ${RABBIT_HEALTH_ENABLED:false}
+    redis:
+      enabled: ${REDIS_ENABLED:false}
+  endpoints:
+    web:
+      exposure:
+        include: health
+app:
+  demo: ${DEMO_MODE:true}
+  demo-password: ${DEMO_PASSWORD:local-demo-change-me}
+  jwt-secret: ${JWT_SECRET:}
+  storage: ${OBJECT_DIRECTORY:./runtime/objects}
+  execution: ${EXECUTION_MODE:rabbit}
+  jobs:
+    concurrency: ${JOB_CONCURRENCY:2}
+    prefetch: ${JOB_PREFETCH:2}
+    project-dispatch-window: ${JOB_PROJECT_DISPATCH_WINDOW:0}
+    project-backlog-limit: ${JOB_PROJECT_BACKLOG_LIMIT:0}
+    total-backlog-limit: ${JOB_TOTAL_BACKLOG_LIMIT:0}
+    max-attempts: ${JOB_MAX_ATTEMPTS:3}
+    lease-seconds: ${JOB_LEASE_SECONDS:60}
+    retry-seconds: ${JOB_RETRY_SECONDS:5}
+    max-run-seconds: ${JOB_MAX_RUN_SECONDS:600}
+  spec-cache:
+    enabled: ${SPEC_CACHE_ENABLED:false}
+    ttl-seconds: ${SPEC_CACHE_TTL_SECONDS:120}
+  http:
+    connect-timeout-seconds: ${HTTP_CONNECT_TIMEOUT_SECONDS:5}
+    request-timeout-seconds: ${HTTP_REQUEST_TIMEOUT_SECONDS:30}
+  model-mode: ${MODEL_MODE:rules}
+  model-base-url: ${MODEL_BASE_URL:http://127.0.0.1:8000/v1}
+  model-api-key: ${MODEL_API_KEY:}
+  model-name: ${MODEL_NAME:membrane-base}
+  query-adapter: ${QUERY_ADAPTER:}
+  review-adapter: ${REVIEW_ADAPTER:}
+  embedding-model: ${EMBEDDING_MODEL:}
+  embedding-dimensions: ${EMBEDDING_DIMENSIONS:1024}
+  vector-enabled: ${VECTOR_ENABLED:false}
+
+  local-model: ${MODEL_LOCAL:false}
+
+  redis-enabled: ${REDIS_ENABLED:false}
+  rate-capacity: ${API_RATE_LIMIT_PER_MINUTE:60}
+  object-store: ${OBJECT_STORE:local}
+  minio-endpoint: ${MINIO_ENDPOINT:http://127.0.0.1:9000}
+  minio-access-key: ${MINIO_ACCESS_KEY:}
+  minio-secret-key: ${MINIO_SECRET_KEY:}
+  minio-bucket: ${MINIO_BUCKET:membrane-java}
+
+  embedding-base-url: ${EMBEDDING_BASE_URL:http://127.0.0.1:8001/v1}
+  embedding-api-key: ${EMBEDDING_API_KEY:}
+  reranker-model: ${RERANKER_MODEL:}
+  reranker-base-url: ${RERANKER_BASE_URL:http://127.0.0.1:8002}
+  reranker-api-key: ${RERANKER_API_KEY:}
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+    call-setters-on-nulls: true
+    local-cache-scope: STATEMENT
+    default-statement-timeout: ${DB_QUERY_TIMEOUT_SECONDS:15}
+  global-config:
+    banner: false

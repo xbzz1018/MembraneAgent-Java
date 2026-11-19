@@ -1,0 +1,11 @@
+target/
+runtime/
+.env
+*.log
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+.idea/
+.vscode/
+*.iml
